@@ -22,6 +22,7 @@ T& string_map<T>::operator[](const string& clave){
         if ((n->siguientes).at(clave[i]) == nullptr) {
             (n->siguientes).at(clave[i]) = new Nodo();
             _size++;
+            (n->hijos)++;
         }
         n = (n->siguientes).at(clave[i]);
     }
@@ -63,22 +64,44 @@ T& string_map<T>::at(const string& clave) {
     return n->definicion;
 }
 
-struct Nodo* borrarR (int i, const string& clave, struct Nodo* n) {
-    if (i == clave.size()) {
-        if (n.hijos == 0) {
-            delete n;
-            return nullptr;
-        } else {
-            n->definicion = nullptr;
-            return n;
+
+struct Nodo* remove(struct Nodo* trieNode, const string& key, int index) {
+    struct Nodo* raiz;
+
+    if (index == key.size()) {
+        if (trieNode->hijos == 0) {
+            delete trieNode;
+            raiz = nullptr;
         }
-    } else {
-        struct Nodo* sig = borrarR(i++, clave, (n->siguientes).at(clave[i]));
-        if (sig == nullptr) n->hijos--;
-        (n->siguientes).at(claves[i]) = sig;
-        return n;
+        else {
+            trieNode->definicion = nullptr;
+            raiz = trieNode;
+        }
+    }
+    else {
+       struct Node* nextNode = (trieNode->siguientes).at(key[i]);
+       nextNode = remove(nextNode, key, ++index);
+       raiz = nextNode;
+    }
+    return raiz; 
+}
+
+int remove(struct Nodo* trieNode, const string& key, int index) {
+    int nodosBorrados = 0;
+    if (index == key.size()) {
+        if (trieNode->hijos == 0) {
+            delete trieNode;
+            nodosBorrados = 1;
+        }
+        else {
+            nodosBorrados = 0;
+        }
+    }
+    else {
+        
     }
 }
+
 template <typename T>
 void string_map<T>::erase(const string& clave) {
     /*struct Nodo* n = raiz;
