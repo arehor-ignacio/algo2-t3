@@ -34,7 +34,7 @@ public:
     INSERT 
     * Inserta un par clave, valor en el diccionario
     **/
-    void insert(const pair<string, T>&);
+    void insert(const pair<string, T>& value_type);
 
     /**
     COUNT
@@ -85,12 +85,13 @@ private:
         T* definicion;
         int hijos;
         Nodo() : hijos(0), definicion(nullptr) {
-            for (int i = 0; i < 256; i++) siguiente[i] = nullptr;
+            for (int i = 0; i < 256; i++) siguientes[i] = nullptr;
         };
     };
 
-    Nodo* raiz;
-    int _size;
+    std::set<string> _keys;
+    struct Nodo* raiz;
+    struct Nodo* _remove(struct Nodo* trieNode, const string& key, int index);
 };
 
 #include "string_map.hpp"

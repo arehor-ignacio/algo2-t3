@@ -1,5 +1,5 @@
 template <typename T>
-string_map<T>::string_map() : _size(0), raiz(nullptr){
+string_map<T>::string_map() : raiz(nullptr), _keys(std::set<string>()){
 }
 
 template <typename T>
@@ -7,36 +7,54 @@ string_map<T>::string_map(const string_map<T>& aCopiar) : string_map() { *this =
 
 template <typename T>
 string_map<T>& string_map<T>::operator=(const string_map<T>& d) {
-    // COMPLETAR
+    std::set<string>::const_iterator it = d._keys.begin();
+    std::set<string>::const_iterator itEnd = d._keys.end();
+    while (it != itEnd) {
+        T elem = d.at(*it);
+        (*this)[*it] = elem;
+        it++;
+    }
+    return *this;
 }
 
 template <typename T>
 string_map<T>::~string_map(){
-    // COMPLETAR
+    std::set<string>::iterator it = this->_keys.begin();
+    std::set<string>::iterator itEnd = this->_keys.end();
+
+    while (it != itEnd) {           // Se indefine?
+        this->raiz = _remove(this->raiz, *it, 0);
+        it = this->_keys.erase(it);
+    }
 }
 
 template <typename T>
 T& string_map<T>::operator[](const string& clave){
     struct Nodo* n = raiz;
+    bool updt = false;
     for (int i = 0; i < clave.size(); i++) {
         if ((n->siguientes).at(clave[i]) == nullptr) {
             (n->siguientes).at(clave[i]) = new Nodo();
-            _size++;
             (n->hijos)++;
+            updt = true;
         }
         n = (n->siguientes).at(clave[i]);
     }
-    return n->definicion;
+    if (updt) {
+        _keys.insert(clave);
+    }
+    return *(n->definicion);
 }
 
 
 template <typename T>
-int string_map<T>::count(const string& clave) const{
+int string_map<T>::count(const string& clave) const {
     int i = 0;
     struct Nodo* n = raiz;
 
-    while (i < clave.size() && ((n->siguientes).at(clave[i]) != nullptr) {
-        n = (n->siguiente).at(clave[i]);
+    while (i < clave.size() &&
+        ((n->siguientes).at(clave[i]) != nullptr)) {
+        n = (n->siguientes).at(clave[i]);
         i++;
     }
     return ((n->definicion) != nullptr ? 1 : 0);
@@ -49,111 +67,60 @@ const T& string_map<T>::at(const string& clave) const {
     struct Nodo* n = raiz;
     
     while (i < clave.size()) {
-        n = (n->siguiente).at(clave[i]);
+        n = (n->siguientes).at(clave[i]);
         i++;
     }
-    return n->definicion;
+    return *(n->definicion);
 }
 
 template <typename T>
 T& string_map<T>::at(const string& clave) {
     struct Nodo* n = raiz;
     
-    for (int i = 0; i < clave.size(); i++) n = (n->siguiente).at(clave[i]); 
-    
-    return n->definicion;
+    for (int i = 0; i < clave.size(); i++) n = (n->siguientes).at(clave[i]);
+    return *(n->definicion);
 }
 
-
-struct Nodo* remove(struct Nodo* trieNode, const string& key, int index) {
-    struct Nodo* raiz;
-
+template <typename T>
+struct Nodo* _remove(struct Nodo* trieNode, const string& key, int index) {
+    void* res;
     if (index == key.size()) {
         if (trieNode->hijos == 0) {
             delete trieNode;
-            raiz = nullptr;
+            res = nullptr;
         }
         else {
             trieNode->definicion = nullptr;
-            raiz = trieNode;
+            res = trieNode;
         }
     }
     else {
-       struct Node* nextNode = (trieNode->siguientes).at(key[i]);
-       nextNode = remove(nextNode, key, ++index);
-       raiz = nextNode;
+       struct Node* nextNode = (trieNode->siguientes).at(key[index]);
+       nextNode = _remove(nextNode, key, ++index);
+       if (nextNode == nullptr) {
+            nextNode.hijos--;
+       }
+       res = nextNode;
     }
-    return raiz; 
-}
-
-int remove(struct Nodo* trieNode, const string& key, int index) {
-    int nodosBorrados = 0;
-    if (index == key.size()) {
-        if (trieNode->hijos == 0) {
-            delete trieNode;
-            nodosBorrados = 1;
-        }
-        else {
-            nodosBorrados = 0;
-        }
-    }
-    else {
-        
-    }
+    return res; 
 }
 
 template <typename T>
 void string_map<T>::erase(const string& clave) {
-    /*struct Nodo* n = raiz;
-    struct Nodo* u = raiz;
-    int j = 0;
-    for (int i = 0; i < clave.size(); i++) {
-        if ( (n->hijos > 1 ) || (n->definicion != nullptr) ) {
-            u = n;
-            j = i;
-        }
-        n = (n->siguiente).at(clave[i]);
-    }
-    
-    struct Nodo* actual = (u->siguientes).at(clave[j]);
-    (u->siguiente).at(clave[j]) = nullptr;
-    u.hijos--;
-    j++;
-    while (j < clave.size()) {
-        struct Nodo* t = actual;
-        actual = (actual->siguientes).at(clave[j]);
-        delete actual;
-        j++;
-    }
-    _size--;
-
-    
-
-
-
-
-    while (u != n && j < clave.size()) {
-        struct Nodo* elim = (u->siguientes).at(clave[j]);
-        (u->siguientes).at(clave[j]) = nullptr;
-        u = elim;
-        j++; 
-    }
-    while (u' != n && j < clave.size()) {
-        struct Nodo* t = u';
-        u = (u->siguientes).at(clave[j]);
-        delete t;
-        j++;
-    }*/
-    raiz = borrarR(0, clave, raiz);
-    _size--;
+    raiz = _remove(raiz, clave, 0);
+    _keys.erase(clave);
 }
 
 template <typename T>
 int string_map<T>::size() const{
-    return _size;
+    return this->_keys.size();
 }
 
 template <typename T>
 bool string_map<T>::empty() const{
-    return _size == 0;
+    return this->_keys.empty();
+}
+template<typename T>
+void string_map<T>::insert(const pair<string, T>& value_type) {
+    (*this)[std::get<0>(value_type)] = std::get<1>(value_type);
 }
