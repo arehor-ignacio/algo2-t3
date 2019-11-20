@@ -91,7 +91,7 @@ private:
 
     std::set<string> _keys;
     struct Nodo* raiz;
-    struct Nodo* _remove(struct Nodo* trieNode, const string& key, int index);
+
 };
 
 #include "string_map.hpp"

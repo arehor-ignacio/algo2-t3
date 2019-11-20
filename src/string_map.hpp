@@ -1,4 +1,27 @@
 template <typename T>
+typename string_map<T>::Nodo* _remove(struct Nodo* trieNode, const string& key, int index) {
+    void* res;
+    if (index == key.size()) {
+        if (trieNode->hijos == 0) {
+            delete trieNode;
+            res = nullptr;
+        }
+        else {
+            trieNode->definicion = nullptr;
+            res = trieNode;
+        }
+    }
+    else {
+       struct Node* nextNode = (trieNode->siguientes).at(key[index]);
+       nextNode = _remove(nextNode, key, ++index);
+       if (nextNode == nullptr) {
+            nextNode.hijos--;
+       }
+       res = nextNode;
+    }
+    return res; 
+}
+template <typename T>
 string_map<T>::string_map() : raiz(nullptr), _keys(std::set<string>()){
 }
 
@@ -79,30 +102,6 @@ T& string_map<T>::at(const string& clave) {
     
     for (int i = 0; i < clave.size(); i++) n = (n->siguientes).at(clave[i]);
     return *(n->definicion);
-}
-
-template <typename T>
-struct Nodo* _remove(struct Nodo* trieNode, const string& key, int index) {
-    void* res;
-    if (index == key.size()) {
-        if (trieNode->hijos == 0) {
-            delete trieNode;
-            res = nullptr;
-        }
-        else {
-            trieNode->definicion = nullptr;
-            res = trieNode;
-        }
-    }
-    else {
-       struct Node* nextNode = (trieNode->siguientes).at(key[index]);
-       nextNode = _remove(nextNode, key, ++index);
-       if (nextNode == nullptr) {
-            nextNode.hijos--;
-       }
-       res = nextNode;
-    }
-    return res; 
 }
 
 template <typename T>
