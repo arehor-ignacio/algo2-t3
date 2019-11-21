@@ -83,14 +83,38 @@ private:
     struct Nodo {
         vector<Nodo*> siguientes;
         T* definicion;
-        int hijos;
-        Nodo() : hijos(0), definicion(nullptr) {
+        Nodo() : definicion(nullptr) {
             for (int i = 0; i < 256; i++) siguientes[i] = nullptr;
         };
     };
 
     std::set<string> _keys;
     struct Nodo* raiz;
+
+    bool esHoja(struct Nodo* nodo) {
+        int i = 0;
+        while ((i < nodo->siguientes.size()) && (nodo->siguientes[i] != nullptr)) ++i;
+        return i == nodo->siguientes.size();
+    }
+    string_map<T>::Nodo* _remove(struct Nodo* trieNode, const string& key, int index) {
+        struct Nodo* res;
+        if (index == key.size()) {
+            if (esHoja(trieNode)) {
+                delete trieNode;
+                res = nullptr;
+            }
+            else {
+                trieNode->definicion = nullptr;
+                res = trieNode;
+            }
+        }
+        else {
+           struct Nodo** ptrNodoSiguiente = &(trieNode->siguientes).at(key[index]);
+           (*ptrNodoSiguiente) = _remove(*ptrNodoSiguiente, key, ++index);
+           res = *ptrNodoSiguiente;
+        }
+        return res;
+    }
 
 };
 

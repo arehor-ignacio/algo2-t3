@@ -1,26 +1,26 @@
-template <typename T>
-typename string_map<T>::Nodo* _remove(struct Nodo* trieNode, const string& key, int index) {
-    void* res;
-    if (index == key.size()) {
-        if (trieNode->hijos == 0) {
-            delete trieNode;
-            res = nullptr;
-        }
-        else {
-            trieNode->definicion = nullptr;
-            res = trieNode;
-        }
-    }
-    else {
-       struct Node* nextNode = (trieNode->siguientes).at(key[index]);
-       nextNode = _remove(nextNode, key, ++index);
-       if (nextNode == nullptr) {
-            nextNode.hijos--;
-       }
-       res = nextNode;
-    }
-    return res; 
-}
+// template <typename T>
+// typename string_map<T>::Nodo* _remove(struct Nodo* trieNode, const string& key, int index) {
+//     void* res;
+//     if (index == key.size()) {
+//         if (trieNode->hijos == 0) {
+//             delete trieNode;
+//             res = nullptr;
+//         }
+//         else {
+//             trieNode->definicion = nullptr;
+//             res = trieNode;
+//         }
+//     }
+//     else {
+//        struct Node* nextNode = (trieNode->siguientes).at(key[index]);
+//        nextNode = _remove(nextNode, key, ++index);
+//        if (nextNode == nullptr) {
+//             nextNode.hijos--;
+//        }
+//        res = nextNode;
+//     }
+//     return res; 
+// }
 template <typename T>
 string_map<T>::string_map() : raiz(nullptr), _keys(std::set<string>()){
 }
@@ -53,37 +53,45 @@ string_map<T>::~string_map(){
 
 template <typename T>
 T& string_map<T>::operator[](const string& clave){
-    struct Nodo* n = raiz;
-    bool updt = false;
+    struct Nodo* ptrDirSigNodo = this->raiz;
+    // bool updt = false;
+
     for (int i = 0; i < clave.size(); i++) {
-        if ((n->siguientes).at(clave[i]) == nullptr) {
-            (n->siguientes).at(clave[i]) = new Nodo();
-            (n->hijos)++;
-            updt = true;
+        if (*ptrDirSigNodo == nullptr) {
+            *ptrDirSigNodo = new Nodo();
         }
-        n = (n->siguientes).at(clave[i]);
+
+        ptrDirSigNodo = &((*ptrDirSigNodo)->siguientes.at(clave[i]));
     }
-    if (updt) {
-        _keys.insert(clave);
-    }
-    return *(n->definicion);
+    return *((*ptrDirSigNodo)->definicion);
+
+    // for (int i = 0; i < clave.size(); i++) {
+    //     if ((n->siguientes).at(clave[i]) == nullptr) {
+    //         (n->siguientes).at(clave[i]) = new Nodo();
+    //         updt = true;
+    //     }
+    //     n = (n->siguientes).at(clave[i]);
+    // }
+    // if (updt) {
+    //     _keys.insert(clave);
+    // }
+    // return *(n->definicion);
 }
 
 
 template <typename T>
 int string_map<T>::count(const string& clave) const {
     int i = 0;
-    struct Nodo* n = raiz;
+    struct Nodo* n = this->raiz;
 
-    while (i < clave.size() &&
-        ((n->siguientes).at(clave[i]) != nullptr)) {
+    while (i < clave.size() && n != nullptr) {
         n = (n->siguientes).at(clave[i]);
         i++;
     }
-    return ((n->definicion) != nullptr ? 1 : 0);
+    return 0;
 }
 
-// Pre {def?(c, d) = 1}
+// Pre { def?(c, d) }
 template <typename T>
 const T& string_map<T>::at(const string& clave) const {
     int i = 0;
@@ -121,5 +129,18 @@ bool string_map<T>::empty() const{
 }
 template<typename T>
 void string_map<T>::insert(const pair<string, T>& value_type) {
-    (*this)[std::get<0>(value_type)] = std::get<1>(value_type);
+    struct Nodo* ptrDirSigNodo = this->raiz;
+    std::string clave = std::get<0>(value_type);
+    T significado = std::get<1>(value_type);
+
+    for (int i = 0; i < clave.size(); i++) {
+        if (ptrDirSigNodo == nullptr) {
+            ptrDirSigNodo = new Nodo();
+        }
+        
+        ptrDirSigNodo = &((*ptrDirSigNodo)->siguientes.at(clave[i]));
+    }
+
+    (*ptrDirSigNodo)->definicion = &(significado);
+    this->_keys.insert(std::get<0>(value_type));
 }
