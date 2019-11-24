@@ -168,7 +168,6 @@ TEST(string_map_test, TrieDeTries) {
 	EXPECT_EQ(dicc_dicc.at("con_prefijos").at("casona"), 3);
 
 }
-
 TEST(string_map_test, eraseUnicaClave) {
     string_map<int> singleton;
     singleton.insert(make_pair("hola", 1));
