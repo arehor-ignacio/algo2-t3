@@ -82,41 +82,27 @@ public:
 private:
 
     struct Nodo {
-        vector<Nodo*> siguientes;
+        Nodo* siguientes[256];
         T* definicion;
-        Nodo() : definicion(nullptr) {
-            for (int i = 0; i < 256; i++) siguientes[i] = nullptr;
+        bool esFinDePalabra;
+
+        Nodo() : definicion(new T()), esFinDePalabra(false) {
+            for (int i = 0; i < 256; ++i) {
+                siguientes[i] = nullptr;
+            }
         };
+
+        bool esHoja() {
+            int i = 0;
+            while (i < SIGUIENTES_SIZE && this->siguientes[i] == nullptr) ++i;
+            return i == SIGUIENTES_SIZE;
+        }
     };
+    void eliminarNodo (struct Nodo*);
+    struct Nodo* removerNodo (struct Nodo*&, const string&, int);
 
+    Nodo* _raiz;
     std::set<string> _keys;
-    struct Nodo* raiz;
-
-    bool esHoja(struct Nodo* nodo) {
-        int i = 0;
-        while ((i < nodo->siguientes.size()) && (nodo->siguientes[i] != nullptr)) ++i;
-        return i == nodo->siguientes.size();
-    }
-    string_map<T>::Nodo* _remove(struct Nodo* trieNode, const string& key, int index) {
-        struct Nodo* res;
-        if (index == key.size()) {
-            if (esHoja(trieNode)) {
-                delete trieNode;
-                res = nullptr;
-            }
-            else {
-                trieNode->definicion = nullptr;
-                res = trieNode;
-            }
-        }
-        else {
-           struct Nodo** ptrNodoSiguiente = &(trieNode->siguientes).at(key[index]);
-           (*ptrNodoSiguiente) = _remove(*ptrNodoSiguiente, key, ++index);
-           res = *ptrNodoSiguiente;
-        }
-        return res;
-    }
-
 };
 
 #include "string_map.hpp"
