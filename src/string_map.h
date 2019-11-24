@@ -1,5 +1,6 @@
 #ifndef STRING_MAP_H_
 #define STRING_MAP_H_
+#define SIGUIENTES_SIZE 256
 
 #include <string>
 
@@ -31,10 +32,10 @@ public:
     ~string_map();
 
     /**
-    INSERT 
+    INSERT
     * Inserta un par clave, valor en el diccionario
     **/
-    void insert(const pair<string, T>& value_type);
+    void insert(const pair<string, T>&);
 
     /**
     COUNT
